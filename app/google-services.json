@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "83177855839",
+    "project_id": "firebase-cleanvironment"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83177855839:android:ab6677ab9e5ec3d3",
+        "android_client_info": {
+          "package_name": "io.paperplane.rajb.cleanvironment"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "83177855839-jpvlta021auh2siu2jta43m3hoj2okra.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "83177855839-aq5v23042gv8rsvujjk7932npl1ar6f2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.paperplane.rajb.cleanvironment",
+            "certificate_hash": "32276ba101f82fc3966c5452eb9fb401a1e62721"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEo__8iORwvv91M0cJ17EOoXJAr1R7kZ0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
