@@ -3,9 +3,11 @@ package io.paperplane.rajb.cleanvironment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class HazardFormActivity extends Activity {
 
@@ -37,6 +39,9 @@ public class HazardFormActivity extends Activity {
 
         problemType = spinner.getSelectedItem().toString();
         desc = description.getText().toString();
+
+        Toast.makeText(getApplicationContext(), latitude + ", " + longitude + ", " + problemType + ", " + desc, Toast.LENGTH_LONG).show();
+
 
     }
 }
