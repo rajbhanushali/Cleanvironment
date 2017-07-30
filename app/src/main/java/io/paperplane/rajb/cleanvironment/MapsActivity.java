@@ -2,6 +2,7 @@ package io.paperplane.rajb.cleanvironment;
 
         import android.Manifest;
         import android.content.Context;
+        import android.content.Intent;
         import android.content.pm.PackageManager;
         import android.location.Location;
         import android.location.LocationManager;
@@ -51,11 +52,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
+
                 Log.d(TAG, "onClick: User Location (Lat,Long):" + latitude + ", " + longitude);
-                userLoc = null;
-                userLoc = new LatLng(latitude,longitude);
-                mMap.addMarker(new MarkerOptions().position(userLoc).title("User Location"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
+
+                Intent i = new Intent(MapsActivity.this, HazardFormActivity.class);
+
+                i.putExtra("latitude", latitude);
+                i.putExtra("longitude", longitude);
+
+                startActivity(i);
+//                userLoc = null;
+//                userLoc = new LatLng(latitude,longitude);
+//                mMap.addMarker(new MarkerOptions().position(userLoc).title("User Location"));
+//                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
             }
         });
     }
