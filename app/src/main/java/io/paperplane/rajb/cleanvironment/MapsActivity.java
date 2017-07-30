@@ -12,10 +12,12 @@ package io.paperplane.rajb.cleanvironment;
         import android.util.Log;
         import android.view.View;
 
+        import com.google.android.gms.maps.CameraUpdate;
         import com.google.android.gms.maps.CameraUpdateFactory;
         import com.google.android.gms.maps.GoogleMap;
         import com.google.android.gms.maps.OnMapReadyCallback;
         import com.google.android.gms.maps.SupportMapFragment;
+        import com.google.android.gms.maps.model.BitmapDescriptorFactory;
         import com.google.android.gms.maps.model.LatLng;
         import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -50,10 +52,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     return;
                 }
+
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
 
+                userLoc = null;
+                userLoc = new LatLng(latitude,longitude);
+
                 Log.d(TAG, "onClick: User Location (Lat,Long):" + latitude + ", " + longitude);
+
+
 
                 Intent i = new Intent(MapsActivity.this, HazardFormActivity.class);
 
@@ -61,10 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 i.putExtra("longitude", longitude);
 
                 startActivity(i);
-//                userLoc = null;
-//                userLoc = new LatLng(latitude,longitude);
-//                mMap.addMarker(new MarkerOptions().position(userLoc).title("User Location"));
-//                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
+
             }
         });
     }
@@ -96,6 +101,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "onClick: User Location (Lat,Long):" + latitude + ", " + longitude);
         userLoc = null;
         userLoc = new LatLng(latitude,longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
+        CameraUpdate center = CameraUpdateFactory.newLatLng(userLoc);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(11);
+
+        mMap.moveCamera(center);
+        mMap.animateCamera(zoom);
+
+
+        mMap.addMarker(new MarkerOptions().position(userLoc).title("User Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
     }
 }
