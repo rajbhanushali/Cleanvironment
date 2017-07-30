@@ -5,6 +5,7 @@ package io.paperplane.rajb.cleanvironment;
         import android.content.Intent;
         import android.content.pm.PackageManager;
         import android.content.res.Resources;
+        import android.location.Criteria;
         import android.location.Location;
         import android.location.LocationManager;
         import android.os.Bundle;
@@ -16,6 +17,7 @@ package io.paperplane.rajb.cleanvironment;
         import android.support.v4.content.ContextCompat;
         import android.util.Log;
         import android.view.View;
+        import android.widget.Toast;
 
         import com.google.android.gms.maps.CameraUpdate;
         import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,24 +42,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static LatLng userLoc;
     private static final String TAG = "MapsActivity";
 
+    public double latitude;
+    public double longitude;
+    public LocationManager locationManager;
+    public Criteria criteria;
+    public String bestProvider;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        userLoc = new LatLng(0,0);
+        userLoc = new LatLng(0, 0);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        FloatingActionButton addAlert = (FloatingActionButton)findViewById(R.id.mapViewFAB);
+        FloatingActionButton addAlert = (FloatingActionButton) findViewById(R.id.mapViewFAB);
         addAlert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //                Intent intent = new Intent(MapsActivity.this,AddAlert.class);
 //                startActivity(intent);
-                LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+
                 if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
 
@@ -66,16 +80,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     return;
                 }
 
-                double longitude = location.getLongitude();
-                double latitude = location.getLatitude();
 
                 userLoc = null;
-                userLoc = new LatLng(latitude,longitude);
+                userLoc = new LatLng(latitude, longitude);
 
                 Log.d(TAG, "onClick: User Location (Lat,Long):" + latitude + ", " + longitude);
 
                 userLoc = null;
-                userLoc = new LatLng(latitude,longitude);
+                userLoc = new LatLng(latitude, longitude);
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
                 CameraUpdate center = CameraUpdateFactory.newLatLng(userLoc);
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
@@ -95,6 +107,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -108,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
 
         try {
-            // Customise the styling of the base map using a JSON object defined
+            // Customise the styling of the base  map using a JSON object defined
             // in a raw resource file.
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
@@ -145,16 +159,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        CameraUpdate center = CameraUpdateFactory.newLatLng(userLoc);
 
 //        mMap.animateCamera(zoom);
-
-    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc, 7));
 //
        // mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.7, 13.19), 15.5f), 4000, null);
 
-//        CameraPosition newCamPos = new CameraPosition(userLoc,
-//                15.5f,
-//                mMap.getCameraPosition().tilt, //use old tilt
-//                mMap.getCameraPosition().bearing); //use old bearing
-//        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newCamPos), 2000, null);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc, 17f));
 
 
         //mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
@@ -180,9 +188,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.d("TAG", String.valueOf(childProps.getValue()));
                             Log.d("TAG", String.valueOf(childProps.child("latitude").getValue()));
 
+                            double latitude = 0, longitude = 0;
 
-                            double latitude = (double) childProps.child("latitude").getValue();
-                            double longitude = (double) childProps.child("longitude").getValue();
+                            if(childProps.child("latitude").getValue() != null && childProps.child("longitude").getValue() != null) {
+
+                                 latitude = (double) childProps.child("latitude").getValue();
+                                 longitude = (double) childProps.child("longitude").getValue();
+
+                            }
 
                             String haztype = String.valueOf(childProps.child("hazardtype").getValue());
 
@@ -214,3 +227,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MultiDex.install(this);
     }
 }
+
