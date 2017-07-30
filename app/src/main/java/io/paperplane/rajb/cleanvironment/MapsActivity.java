@@ -7,7 +7,9 @@ package io.paperplane.rajb.cleanvironment;
         import android.location.Location;
         import android.location.LocationManager;
         import android.os.Bundle;
+        import android.provider.ContactsContract;
         import android.support.design.widget.FloatingActionButton;
+        import android.support.multidex.MultiDex;
         import android.support.v4.app.FragmentActivity;
         import android.util.Log;
         import android.view.View;
@@ -20,6 +22,11 @@ package io.paperplane.rajb.cleanvironment;
         import com.google.android.gms.maps.model.BitmapDescriptorFactory;
         import com.google.android.gms.maps.model.LatLng;
         import com.google.android.gms.maps.model.MarkerOptions;
+        import com.google.firebase.database.DataSnapshot;
+        import com.google.firebase.database.DatabaseError;
+        import com.google.firebase.database.DatabaseReference;
+        import com.google.firebase.database.FirebaseDatabase;
+        import com.google.firebase.database.ValueEventListener;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -111,5 +118,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.addMarker(new MarkerOptions().position(userLoc).title("User Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+
+                    for(DataSnapshot childProps: snapshot.getChildren()){
+
+                        Log.d("TAG", String.valueOf(childProps.getValue()));
+                        Log.d("TAG", String.valueOf(childProps.child("latitude").getValue()));
+
+
+
+                        double latitude =  Double.parseDouble( String.valueOf( childProps.child("latitude").getValue() ) );
+                        double longitude = Double.parseDouble( String.valueOf( childProps.child("longitude").getValue() ) );
+
+                        String haztype = String.valueOf( childProps.child("hazardtype").getValue() );
+
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(haztype).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+
+
+                        //Log.d("TAG", "lat: " + latitude + ", lon: " + longitude);
+                    }
+
+                }
+                // ...
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
+        myRef.addValueEventListener(postListener);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        MultiDex.install(this);
     }
 }

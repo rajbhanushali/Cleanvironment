@@ -1,7 +1,9 @@
 package io.paperplane.rajb.cleanvironment;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,8 @@ public class GoogleSignIn extends AppCompatActivity implements
     GoogleApiClient mGoogleApiClient;
     private String TAG;
     private static final int RC_SIGN_IN = 9001;
+
+    public static String USER_ID;
 
 
     @Override
@@ -93,6 +97,8 @@ public class GoogleSignIn extends AppCompatActivity implements
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
+
+            USER_ID = acct.getId();
             //mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             //updateUI(true);
             Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
@@ -106,6 +112,11 @@ public class GoogleSignIn extends AppCompatActivity implements
             Toast.makeText(getApplicationContext(), "Sign in failed. Please try again.", Toast.LENGTH_SHORT).show();
 
         }
+    }
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        MultiDex.install(this);
     }
 
 

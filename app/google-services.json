@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "83177855839",
-    "project_id": "firebase-cleanvironment"
+    "firebase_url": "https://fir-cleanvironment.firebaseio.com",
+    "project_id": "firebase-cleanvironment",
+    "storage_bucket": "firebase-cleanvironment.appspot.com"
   },
   "client": [
     {
@@ -12,6 +14,10 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "83177855839-onjcuhtf092fpmvmclj53njjjkqhs34b.apps.googleusercontent.com",
+          "client_type": 3
+        },
         {
           "client_id": "83177855839-jpvlta021auh2siu2jta43m3hoj2okra.apps.googleusercontent.com",
           "client_type": 3
@@ -35,11 +41,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "83177855839-onjcuhtf092fpmvmclj53njjjkqhs34b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

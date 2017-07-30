@@ -1,13 +1,18 @@
 package io.paperplane.rajb.cleanvironment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class HazardFormActivity extends Activity {
 
@@ -42,6 +47,22 @@ public class HazardFormActivity extends Activity {
 
         Toast.makeText(getApplicationContext(), latitude + ", " + longitude + ", " + problemType + ", " + desc, Toast.LENGTH_LONG).show();
 
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference(GoogleSignIn.USER_ID);
+        String hazardID = myRef.push().getKey();
 
+        myRef.child(hazardID).child("latitude").setValue(latitude);
+        myRef.child(hazardID).child("longitude").setValue(longitude);
+        myRef.child(hazardID).child("description").setValue(desc);
+        myRef.child(hazardID).child("hazardtype").setValue(problemType);
+
+
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        MultiDex.install(this);
     }
 }
