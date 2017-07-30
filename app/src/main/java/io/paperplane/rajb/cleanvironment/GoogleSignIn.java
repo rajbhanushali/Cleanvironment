@@ -96,10 +96,14 @@ public class GoogleSignIn extends AppCompatActivity implements
             //mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             //updateUI(true);
             Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(GoogleSignIn.this, MapsActivity.class);
+            startActivity(i);
+
+
         } else {
             // Signed out, show unauthenticated UI.
             //updateUI(false);
-            Toast.makeText(getApplicationContext(), "not Signed in", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Sign in failed. Please try again.", Toast.LENGTH_SHORT).show();
 
         }
     }

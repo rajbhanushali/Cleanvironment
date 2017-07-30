@@ -13,4 +13,21 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="prompt">Type of Problem</string>
+
+
+    <string-array name="env_hazard_array">
+        <item>Broken Pipeline</item>
+        <item>Exposed Wiring</item>
+        <item>Pothole</item>
+        <item>Air Pollution</item>
+        <item>Litter</item>
+        <item>Contaminated Water</item>
+        <item>Fallen Tree</item>
+        <item>Hazardous Plants</item>
+        <item>Other</item>
+    </string-array>
+
 </resources>
