@@ -57,7 +57,8 @@ public class HazardFormActivity extends Activity {
         myRef.child(hazardID).child("description").setValue(desc);
         myRef.child(hazardID).child("hazardtype").setValue(problemType);
 
-
+        Intent i = new Intent(HazardFormActivity.this, MapsActivity.class);
+        startActivity(i);
     }
 
     @Override

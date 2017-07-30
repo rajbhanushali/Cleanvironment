@@ -4,13 +4,16 @@ package io.paperplane.rajb.cleanvironment;
         import android.content.Context;
         import android.content.Intent;
         import android.content.pm.PackageManager;
+        import android.content.res.Resources;
         import android.location.Location;
         import android.location.LocationManager;
         import android.os.Bundle;
         import android.provider.ContactsContract;
         import android.support.design.widget.FloatingActionButton;
         import android.support.multidex.MultiDex;
+        import android.support.v4.app.ActivityCompat;
         import android.support.v4.app.FragmentActivity;
+        import android.support.v4.content.ContextCompat;
         import android.util.Log;
         import android.view.View;
 
@@ -20,7 +23,9 @@ package io.paperplane.rajb.cleanvironment;
         import com.google.android.gms.maps.OnMapReadyCallback;
         import com.google.android.gms.maps.SupportMapFragment;
         import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+        import com.google.android.gms.maps.model.CameraPosition;
         import com.google.android.gms.maps.model.LatLng;
+        import com.google.android.gms.maps.model.MapStyleOptions;
         import com.google.android.gms.maps.model.MarkerOptions;
         import com.google.firebase.database.DataSnapshot;
         import com.google.firebase.database.DatabaseError;
@@ -55,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
+
                     requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RC_LOCATION);
 
                     return;
@@ -68,7 +74,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 Log.d(TAG, "onClick: User Location (Lat,Long):" + latitude + ", " + longitude);
 
+                userLoc = null;
+                userLoc = new LatLng(latitude,longitude);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
+                CameraUpdate center = CameraUpdateFactory.newLatLng(userLoc);
+                CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
 
+                mMap.moveCamera(center);
+                mMap.animateCamera(zoom);
 
                 Intent i = new Intent(MapsActivity.this, HazardFormActivity.class);
 
@@ -93,6 +106,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+
+
         mMap = googleMap;
 
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -103,21 +132,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             return;
         }
+
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
         Log.d(TAG, "onClick: User Location (Lat,Long):" + latitude + ", " + longitude);
+
         userLoc = null;
         userLoc = new LatLng(latitude,longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
-        CameraUpdate center = CameraUpdateFactory.newLatLng(userLoc);
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(11);
 
-        mMap.moveCamera(center);
-        mMap.animateCamera(zoom);
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
+//         mMap.setMinZoomPreference(12F);
+//        CameraUpdate center = CameraUpdateFactory.newLatLng(userLoc);
+
+//        mMap.animateCamera(zoom);
+
+    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc, 7));
+//
+       // mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.7, 13.19), 15.5f), 4000, null);
+
+//        CameraPosition newCamPos = new CameraPosition(userLoc,
+//                15.5f,
+//                mMap.getCameraPosition().tilt, //use old tilt
+//                mMap.getCameraPosition().bearing); //use old bearing
+//        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newCamPos), 2000, null);
+
+
+        //mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
 
         mMap.addMarker(new MarkerOptions().position(userLoc).title("User Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(userLoc));
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
@@ -126,24 +170,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
 
-                    for(DataSnapshot childProps: snapshot.getChildren()){
+                if((int) dataSnapshot.getChildrenCount() != 0) {
 
-                        Log.d("TAG", String.valueOf(childProps.getValue()));
-                        Log.d("TAG", String.valueOf(childProps.child("latitude").getValue()));
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
+                        for (DataSnapshot childProps : snapshot.getChildren()) {
 
-
-                        double latitude =  Double.parseDouble( String.valueOf( childProps.child("latitude").getValue() ) );
-                        double longitude = Double.parseDouble( String.valueOf( childProps.child("longitude").getValue() ) );
-
-                        String haztype = String.valueOf( childProps.child("hazardtype").getValue() );
-
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(haztype).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+                            Log.d("TAG", String.valueOf(childProps.getValue()));
+                            Log.d("TAG", String.valueOf(childProps.child("latitude").getValue()));
 
 
-                        //Log.d("TAG", "lat: " + latitude + ", lon: " + longitude);
+                            double latitude = (double) childProps.child("latitude").getValue();
+                            double longitude = (double) childProps.child("longitude").getValue();
+
+                            String haztype = String.valueOf(childProps.child("hazardtype").getValue());
+
+                            mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(haztype).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+
+
+                            //Log.d("TAG", "lat: " + latitude + ", lon: " + longitude);
+                        }
+
                     }
 
                 }
